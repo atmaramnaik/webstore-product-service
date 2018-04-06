@@ -30,6 +30,7 @@ dependencies {
 	compile 'mysql:mysql-connector-java'
 	compile 'org.springframework.boot:spring-boot-starter-security'
 	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.2'
+	compile("org.springframework.boot:spring-boot-starter-actuator")
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile group: 'junit', name: 'junit'
 
