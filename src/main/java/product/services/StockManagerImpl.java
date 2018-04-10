@@ -37,7 +37,7 @@ public class StockManagerImpl implements StockManager{
 
     @Override
     public boolean book(Long productId, BigDecimal quantity) {
-        reservation( productId, BigDecimal.valueOf(10),true);
+        reservation( productId, quantity,true);
         return false;
     }
 
