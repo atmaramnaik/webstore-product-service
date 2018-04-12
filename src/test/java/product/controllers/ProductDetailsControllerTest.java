@@ -73,14 +73,23 @@ public class ProductDetailsControllerTest {
         first.setPrice(new BigDecimal("100.0"));
         first.setName("Nescafe");
         Product second=new Product();
-        first.setId(new Long(2));
-        first.setPrice(new BigDecimal("110.0"));
-        first.setName("Tea");
+        second.setId(new Long(2));
+        second.setPrice(new BigDecimal("110.0"));
+        second.setName("Tea");
         doReturn(Arrays.asList(first,second)).when(productManager).getAll();
         doReturn(authentication).when(tokenAuthentication).getAuthentication(any(HttpServletRequest.class));
         mvc.perform(get("/product/all"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].id",is(first.getId().intValue())))
+                .andExpect(jsonPath("$[0].price",is(first.getPrice().doubleValue())))
+                .andExpect(jsonPath("$[0].name",is(first.getName())))
+                .andExpect(jsonPath("$[1].id",is(second.getId().intValue())))
+                .andExpect(jsonPath("$[1].price",is(second.getPrice().doubleValue())))
+                .andExpect(jsonPath("$[1].name",is(second.getName())))
+
+
+        ;
 
         verify(productManager,times(1)).getAll();
         verifyNoMoreInteractions(productManager);
