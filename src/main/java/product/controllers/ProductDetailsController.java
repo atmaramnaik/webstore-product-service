@@ -52,4 +52,9 @@ public class ProductDetailsController {
     public BigDecimal stock(@PathVariable(name = "id") Long id){
         return stockManager.stock(id);
     }
+
+    @GetMapping(path="/test")
+    public boolean test(){
+        return true;
+    }
 }
