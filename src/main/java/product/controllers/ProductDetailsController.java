@@ -53,8 +53,8 @@ public class ProductDetailsController {
         return stockManager.stock(id);
     }
 
-    @GetMapping(path="/test")
-    public boolean test(){
-        return true;
-    }
+//    @GetMapping(path="/test")
+//    public boolean test(){
+//        return true;
+//    }
 }
