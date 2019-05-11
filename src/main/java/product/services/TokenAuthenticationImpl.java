@@ -5,13 +5,12 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
-import product.services.external.Registration;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +18,32 @@ import java.util.stream.Collectors;
 
 @Service("tokenAuthentication")
 public class TokenAuthenticationImpl implements TokenAuthentication{
-    @Autowired
-    private Registration registration;
+    @Value("${jwt.key}")
+    private String SECRET;
 
+    static final String TOKEN_PREFIX = "Bearer";
+    static final String HEADER_STRING = "Authorization";
+    public List<String> getRoles(String token){
+        if (token != null) {
+            // parse the token.
+            Jws<Claims> claimsJws = Jwts.parser()
+                    .setSigningKey(SECRET)
+                    .parseClaimsJws(token.replace(TOKEN_PREFIX, ""));
+            String email = claimsJws.getBody().getSubject();
+            return (List<String>) claimsJws.getBody().get("scopes");
+
+        }
+        return null;
+    }
     public Authentication getAuthentication(HttpServletRequest request) {
-            List<String> scopes = registration.getRoles(request.getHeader("Authorization"));
+        String token = request.getHeader(HEADER_STRING);
+        if (token != null) {
+            // parse the token.
+            Jws<Claims> claimsJws= Jwts.parser()
+                    .setSigningKey(SECRET)
+                    .parseClaimsJws(token.replace(TOKEN_PREFIX, ""));
+            String email=claimsJws.getBody().getSubject();
+            List<String> scopes = (List<String>) claimsJws.getBody().get("scopes");
             List<GrantedAuthority> authorities;
             if(scopes!=null) {
                 authorities = scopes.stream()
@@ -32,6 +52,10 @@ public class TokenAuthenticationImpl implements TokenAuthentication{
             } else {
                 authorities=new ArrayList<>();
             }
-            return new UsernamePasswordAuthenticationToken("authorized", null, authorities) ;
+            return email != null ?
+                    new UsernamePasswordAuthenticationToken(email, null, authorities) :
+                    null;
+        }
+        return null;
     }
 }
