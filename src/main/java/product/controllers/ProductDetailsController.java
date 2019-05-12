@@ -48,6 +48,12 @@ public class ProductDetailsController {
         return true;
     }
 
+    @PostMapping(path = "/{id}/purchase")
+    public boolean purchase(@PathVariable(name = "id") Long id,@RequestBody OrderDTO order){
+        stockManager.purchase(id,order.getQuantity());
+        return true;
+    }
+
     @GetMapping(path="/{id}/stock")
     public BigDecimal stock(@PathVariable(name = "id") Long id){
         return stockManager.stock(id);
